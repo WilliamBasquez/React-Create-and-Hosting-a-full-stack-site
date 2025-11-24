@@ -2,10 +2,12 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./App.css";
 import Layout from "./Layout.jsx";
 import AboutPage from "./pages/AboutPage.jsx";
-import ArticlePage from "./pages/ArticlePage.jsx";
+import ArticlePage, { articleLoader } from "./pages/ArticlePage.jsx";
 import ArticlesList from "./pages/ArticlesList.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+import CreateAccountPage from "./pages/CreateAccountPage.jsx";
 
 const routes = [
   {
@@ -16,19 +18,23 @@ const routes = [
       {
         path: "/about",
         element: <AboutPage />,
-      },
-      {
+      }, {
         path: "/articles",
         element: <ArticlesList />,
-      },
-      {
+      }, {
         path: "/articles/:name",
         element: <ArticlePage />,
-      },
-      {
+        loader: articleLoader
+      }, {
         path: "/",
         element: <HomePage />,
-      },
+      }, {
+        path: '/login',
+        element: <LoginPage />,
+      }, {
+        path: '/create-account',
+        element: <CreateAccountPage />,
+      }
     ],
   },
 ];
