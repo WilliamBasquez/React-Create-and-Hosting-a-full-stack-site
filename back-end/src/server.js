@@ -1,7 +1,12 @@
 import express from "express";
 import { MongoClient, ServerApiVersion } from "mongodb"
 import admin from "firebase-admin";
+import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const credentials = JSON.parse(fs.readFileSync("./credentials.json"));
 
@@ -16,8 +21,7 @@ app.use(express.json());
 let db;
 
 async function connectToDB() {
-  // const uri = "mongodb+srv://webasquez:L8ju22At5I4V333w@cluster0.gqylp.mongodb.net/?appName=Cluster0";
-  const uri = "mongodb://127.0.0.1:27017"
+  const uri = !process.env.MONGODB_USERNAME ? "mongodb://127.0.0.1:27017" : `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@full-stack-react-articl.u5we8c1.mongodb.net/?appName=full-stack-react-articles`
 
   const client = new MongoClient(uri, {
     serverApi: {
@@ -31,6 +35,12 @@ async function connectToDB() {
 
   db = client.db("full-stack-react-db");
 }
+
+app.use(express.static(path.join(__dirname, '../dist')));
+
+app.get(/^(?!\/api).+/, (req, res) => {
+  res.sendFile(path.join(__dirname,'../dist/index.html'));
+});
 
 app.get("/api/articles/:name", async (req, res) => {
   const { name } = req.params;
@@ -111,11 +121,13 @@ app.post("/api/articles/:name/comments", (req, res) => {
   res.json(article);
 });
 
+const PORT = process.env.PORT || 8000;
+
 async function start() {
   await connectToDB();
 
-  app.listen(8000, () => {
-    console.log("Server is running on port 8000");
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
   });
 }
 
